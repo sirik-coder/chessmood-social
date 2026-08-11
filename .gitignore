@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------------
+# Secrets - NEVER commit these
+# ---------------------------------------------------------------------------
+.env
+.env.local
+*.env
+!.env.example
+
+# Google service account key files.
+#
+# Google names the key file it downloads after your PROJECT, e.g.
+#   progresstracker-499108-a23d81f82045.json
+# There is no reliable pattern in that, so we block *.json outright. This project
+# does not need a single .json file committed, so blocking all of them is safe
+# and means a key file can never slip in by accident.
+*.json
+
+# The named patterns below are now covered by *.json - kept as documentation of
+# what these dangerous files tend to look like.
+#   *service*account*.json   *credentials*.json   *-key.json   client_secret*.json
+
+# If you ever need to commit a genuine, secret-free .json file, un-ignore that
+# one specific file here - never delete the *.json line above. Example:
+# !package.json
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Editors / OS junk
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# Local output / logs
+# ---------------------------------------------------------------------------
+*.log
+logs/
+out/
+tmp/

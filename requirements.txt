@@ -1,0 +1,21 @@
+# ---------------------------------------------------------------------------
+# Python dependencies for the ChessMood social analytics collector.
+#
+# Install with:   pip install -r requirements.txt
+#
+# The version ranges say "at least this version, but stay on the same major
+# version". That keeps installs reproducible without pinning you to a single
+# build that might vanish. GitHub Actions will install exactly the same list.
+# ---------------------------------------------------------------------------
+
+# Talks to the Meta Graph API over HTTPS.
+requests>=2.32,<3
+
+# Reads and writes Google Sheets.
+gspread>=6.1,<7
+
+# Signs in to Google using the service account JSON key.
+google-auth>=2.35,<3
+
+# Loads the local .env file so secrets never live in the code.
+python-dotenv>=1.0,<2

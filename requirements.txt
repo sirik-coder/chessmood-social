@@ -19,3 +19,19 @@ google-auth>=2.35,<3
 
 # Loads the local .env file so secrets never live in the code.
 python-dotenv>=1.0,<2
+
+# ---------------------------------------------------------------------------
+# Added for the dashboard (Layer 3) and the Gemini insights.
+# ---------------------------------------------------------------------------
+
+# Turns dashboard.py into a web page.
+streamlit>=1.40,<2
+
+# Tables and grouping for the calculations in stats.py.
+pandas>=2.2,<3
+
+# Draws the bar charts.
+plotly>=5.24,<7
+
+# Talks to Google Gemini.
+google-genai>=1.0,<3

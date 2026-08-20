@@ -37,16 +37,16 @@ class ConfigError(RuntimeError):
 # SECTION 1 - Graph API version
 # ===========================================================================
 #
-# !!! READ THIS !!!
-# I cannot verify from here which Graph API version is current on the day you
-# run this. Meta ships a new version every ~3 months and switches OFF old ones
-# after roughly 2 years. v23.0 is the default below because it is the newest one
-# I am confident actually existed. Before your first run, open
-#     https://developers.facebook.com/docs/graph-api/changelog
-# and if a newer version is listed, put it in your .env as META_API_VERSION.
-# If you call a retired version you get a clear error, not silent bad data.
+# Default: v26.0 - checked against Meta's changelog on 2026-08-11.
 #
-GRAPH_API_VERSION = (os.getenv("META_API_VERSION") or "v23.0").strip()
+# Meta ships a new version every ~3 months and switches OFF old ones after
+# roughly 2 years, so this default WILL go stale eventually. When it does, prefer
+# setting META_API_VERSION in .env over editing this line - that way upgrading
+# never touches code, and GitHub Actions can be bumped by changing one secret.
+#     https://developers.facebook.com/docs/graph-api/changelog
+# Calling a retired version gives you a clear error, not silently wrong data.
+#
+GRAPH_API_VERSION = (os.getenv("META_API_VERSION") or "v26.0").strip()
 
 # Both Instagram and Facebook business data come from this same host.
 GRAPH_BASE_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}"

@@ -5,23 +5,24 @@ and writes it into a Google Sheet. No manual CSV exports.
 
 ---
 
-## READ THIS FIRST — the two things I could not verify for you
+## READ THIS FIRST
 
-You asked me to tell you rather than guess. Here is exactly what to double-check.
+### 1. The Graph API version — settled
 
-### 1. The Graph API version
+`config.py` defaults to **`v26.0`**, confirmed against Meta's changelog on
+**2026-08-11**. Nothing to do right now.
 
-`config.py` defaults to **`v23.0`**. Meta releases a new version roughly every
-three months and switches old ones **off** after about two years. I cannot see
-today's changelog from here, so before your first run open:
-
-<https://developers.facebook.com/docs/graph-api/changelog>
-
-If a newer version is listed, put it in your `.env`:
+It will go stale eventually: Meta releases a new version roughly every three
+months and switches old ones **off** after about two years. When that happens,
+override it in `.env` rather than editing `config.py`:
 
 ```
-META_API_VERSION=v25.0
+META_API_VERSION=v27.0
 ```
+
+Doing it that way means an upgrade never touches code, and the GitHub Actions run
+can be bumped by changing one secret. The changelog lives at
+<https://developers.facebook.com/docs/graph-api/changelog>.
 
 A retired version gives you a loud, clear error — it will not silently return
 bad numbers.
@@ -110,12 +111,12 @@ message telling you to come back here — not a stack trace.
 With your token in hand, paste these into a browser (swap in your own values):
 
 ```
-https://graph.facebook.com/v23.0/me/accounts?access_token=YOUR_TOKEN
+https://graph.facebook.com/v26.0/me/accounts?access_token=YOUR_TOKEN
 ```
 → gives you the Facebook Page **id** → that is `FB_PAGE_ID`.
 
 ```
-https://graph.facebook.com/v23.0/YOUR_PAGE_ID?fields=instagram_business_account&access_token=YOUR_TOKEN
+https://graph.facebook.com/v26.0/YOUR_PAGE_ID?fields=instagram_business_account&access_token=YOUR_TOKEN
 ```
 → gives you `instagram_business_account.id` → that is `IG_BUSINESS_ACCOUNT_ID`.
 

@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# Daily refresh of the ChessMood social data.
+#
+# WHAT THIS DOES
+#   Every morning it starts a clean computer on GitHub's side, installs the
+#   libraries, runs collect.py (pull the numbers from Meta) and then
+#   analyze.py (work out the rates and tags). Both write into your Google
+#   Sheet, so the dashboard is up to date before you open it.
+#
+# WHEN IT RUNS
+#   06:00 in Yerevan = 02:00 UTC. GitHub only understands UTC.
+#   You can also start it by hand any time - see workflow_dispatch below.
+#
+# WHY --skip-fb
+#   Facebook is still broken (error #10, wrong token). Skipping it keeps the
+#   job green. Remove that flag once we fix meta_client.py.
+# ---------------------------------------------------------------------------
+
+name: Daily social data refresh
+
+on:
+  schedule:
+    - cron: "0 2 * * *"      # 02:00 UTC = 06:00 Yerevan
+  workflow_dispatch:          # lets you press a button to run it now
+
+# Stop two runs overlapping if one is slow.
+concurrency:
+  group: daily-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install the libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Collect posts from Meta
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_API_VERSION: ${{ secrets.META_API_VERSION }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python collect.py --skip-fb
+
+      - name: Work out rates and tags
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_API_VERSION: ${{ secrets.META_API_VERSION }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python analyze.py

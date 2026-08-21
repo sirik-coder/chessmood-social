@@ -48,6 +48,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # TEMPORARY: proves whether the token secret arrived intact.
+      # GitHub hides the value but not its length, so this leaks nothing.
+      # Delete this step once the job is green.
+      - name: Check the token secret
+        env:
+          TOK: ${{ secrets.META_ACCESS_TOKEN }}
+        run: |
+          echo "length here : ${#TOK}"
+          echo "length wanted: 210"
+          case "$TOK" in
+            *'"'*) echo "PROBLEM: contains a quote character" ;;
+            *' '*) echo "PROBLEM: contains a space" ;;
+            *) echo "no quotes or spaces found" ;;
+          esac
+          if [ "${#TOK}" -eq 210 ]; then echo "LENGTH OK"; else echo "LENGTH WRONG"; fi
+
       - name: Collect posts from Meta
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}

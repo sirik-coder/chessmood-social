@@ -395,45 +395,71 @@ def main() -> None:
 
     # ---------------- 3. What to post ----------------
     with tab3:
-        text, when = ideas_as_text(ideas)
-
         st.subheader("What to post next")
-        if when:
-            st.caption(f"Last generated: {when}")
-        st.caption(f"Lines found in the AI_Insights tab: {len(ideas)}")
 
-        # Show the saved report FIRST, so you never have to scroll for it.
-        report_box = st.container()
-        if text:
-            with report_box:
-                st.markdown(text)
-        else:
-            with report_box:
-                st.info("No ideas saved yet. Click the button below.")
+        # The button comes FIRST, then the report right under it. So after you
+        # click, the new text appears exactly where you are looking.
+        left, right = st.columns([1, 2])
+        with left:
+            generate = st.button("Generate fresh ideas with Gemini",
+                                 type="primary", use_container_width=True)
+        with right:
+            keep_copy = st.checkbox(
+                "Also keep a copy in the Google Sheet",
+                value=False,
+                help="Off means the report lives on this page only. It is then "
+                     "lost when the app restarts. On means it is also written "
+                     "to the AI_Insights tab and comes back next time.",
+            )
 
-        st.divider()
-
-        if st.button("Generate fresh ideas with Gemini", type="primary"):
+        if generate:
             if inspiration.empty:
                 st.error("No competitor data yet. Run  python inspire.py  first.")
             else:
-                with st.spinner("Asking Gemini..."):
+                with st.spinner("Asking Gemini... this takes 20-60 seconds."):
                     try:
                         fresh = generate_ideas(
                             format_summary, tag_summary, account_summary,
                             competitor_formats, hooks, frequency,
                         )
-                        stamp = save_ideas(fresh)
-                        st.cache_data.clear()
-                        st.success(f"Done. Saved at {stamp}.")
-                        report_box.empty()
-                        with report_box:
-                            st.markdown(fresh)
+                        stamp = datetime.now(timezone.utc).strftime(
+                            "%Y-%m-%d %H:%M UTC")
+                        if keep_copy:
+                            stamp = save_ideas(fresh)
+                            st.cache_data.clear()
+                        # Remember it for this browser session so it survives
+                        # switching tabs and clicking around.
+                        st.session_state["ideas_text"] = fresh
+                        st.session_state["ideas_when"] = stamp
+                        st.session_state["ideas_saved"] = keep_copy
                     except Exception as error:
                         st.error(f"Could not generate ideas:\n\n{error}")
 
-        st.caption("Gemini receives only the calculated tables, never raw rows. "
-                   "So it cannot invent counts.")
+        # What to show: this session's fresh report wins. Otherwise fall back
+        # to whatever was saved in the sheet last time.
+        text = st.session_state.get("ideas_text", "")
+        when = st.session_state.get("ideas_when", "")
+        is_fresh = bool(text)
+        if not text:
+            text, when = ideas_as_text(ideas)
+
+        st.divider()
+
+        if text:
+            if is_fresh:
+                where = ("saved to the sheet" if st.session_state.get("ideas_saved")
+                         else "shown here only, not saved")
+                st.success(f"Fresh report - generated {when} - {where}.")
+            else:
+                st.caption(f"Saved report from the Google Sheet - {when}. "
+                           "Click the button above for a new one.")
+            st.markdown(text)
+        else:
+            st.info("Nothing yet. Click the button above.")
+
+        st.divider()
+        st.caption("Gemini receives only the calculated tables from stats.py, "
+                   "never raw rows. So it cannot invent a count.")
 
     # ---------------- 4. This week ----------------
     with tab4:

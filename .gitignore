@@ -56,3 +56,6 @@ $RECYCLE.BIN/
 logs/
 out/
 tmp/
+
+# Streamlit local secrets - never commit
+.streamlit/secrets.toml

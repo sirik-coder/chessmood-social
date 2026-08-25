@@ -399,6 +399,18 @@ def _parse_service_account(raw: str) -> dict:
     return info
 
 
+def parse_service_account(raw: str) -> dict:
+    """
+    Public name for the tolerant key reader.
+
+    Other scripts (analyze.py, inspire.py) call this so they accept the same
+    three shapes as collect.py: raw JSON, base64, or a path to a .json file.
+    Without it, those scripts only understood a file path - which does not
+    exist on GitHub Actions, so they failed there.
+    """
+    return _parse_service_account(raw)
+
+
 def get_settings() -> Settings:
     """
     Read and validate everything. Call this once at the start of collect.py.

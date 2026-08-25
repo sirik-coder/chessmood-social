@@ -68,15 +68,14 @@ def connect_to_sheet():
     if not key_value:
         sys.exit("ERROR: GOOGLE_SERVICE_ACCOUNT_JSON is missing from .env")
 
-    # The value can be a PATH to a .json file, or the whole JSON as text.
-    # Support both, so this also works later on GitHub Actions.
-    if key_value.startswith("{"):
-        info = json.loads(key_value)
-    else:
-        if not os.path.exists(key_value):
-            sys.exit(f"ERROR: key file not found at: {key_value}")
-        with open(key_value, "r", encoding="utf-8") as f:
-            info = json.load(f)
+    # CHANGED: use the shared reader in config.py. It accepts raw JSON, a
+    # base64 blob, or a file path. GitHub Actions has no key file on disk, so
+    # the old file-path-only version failed there.
+    import config
+    try:
+        info = config.parse_service_account(key_value)
+    except Exception as error:
+        sys.exit(f"ERROR: could not read GOOGLE_SERVICE_ACCOUNT_JSON.\n  {error}")
 
     creds = Credentials.from_service_account_info(info, scopes=SCOPES)
     client = gspread.authorize(creds)

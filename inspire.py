@@ -85,14 +85,14 @@ def connect_to_sheet():
     if not sheet_id or not key_value:
         return None  # we can still print results without the sheet
 
-    if key_value.startswith("{"):
-        info = json.loads(key_value)
-    else:
-        if not os.path.exists(key_value):
-            print(f"  WARNING: key file not found at {key_value} - will not save to the sheet.")
-            return None
-        with open(key_value, "r", encoding="utf-8") as f:
-            info = json.load(f)
+    # CHANGED: same shared reader as collect.py and analyze.py, so this also
+    # works on GitHub Actions where the key arrives as base64, not a file.
+    import config
+    try:
+        info = config.parse_service_account(key_value)
+    except Exception as error:
+        print(f"  WARNING: could not read the Google key ({error}) - will not save.")
+        return None
 
     try:
         creds = Credentials.from_service_account_info(info, scopes=SCOPES)

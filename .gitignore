@@ -59,3 +59,8 @@ tmp/
 
 # Streamlit local secrets - never commit
 .streamlit/secrets.toml
+
+# Working output from the tag-tuning scripts - regenerate any time, do not commit
+untagged.txt
+tag_report.txt
+*.backup

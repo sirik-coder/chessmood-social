@@ -21,6 +21,55 @@ So the MOST SPECIFIC groups must stay at the TOP.
 TAG_RULES = [
 
     # ------------------------------------------------------------------
+    # 0. QUESTION - you ask the audience something, or ask them to act.
+    #    ADDED after reading the untagged posts. These were the five best
+    #    carousels in the whole account (4.45%, 3.91%, 3.86%, 3.36%, 3.21%
+    #    save) and they had no tag at all. Placed FIRST because the pattern
+    #    is stronger than the topic.
+    # ------------------------------------------------------------------
+    ("question", [
+        "which book would you add",
+        "are you more of",
+        "what should i do next",
+        "what should be my plan",
+        "should we do more",
+        "you know who needs this",
+        "comment the word",
+        "comment below",
+        "tag someone",
+        "send!",
+        "which one",
+        "agree?",
+        "do you agree",
+        "what do you think",
+        "who else",
+    ]),
+
+    # ------------------------------------------------------------------
+    # 0b. EVENT - tournaments, prize funds, partner competitions.
+    # ------------------------------------------------------------------
+    ("event", [
+        "grand prix",
+        "in prizes",
+        "lichess",
+        "grand final",
+        "tournament",
+        "giveaway",
+        "20/20",
+    ]),
+
+    # ------------------------------------------------------------------
+    # 0c. BLOG ARTICLE - pointing at written content off Instagram.
+    # ------------------------------------------------------------------
+    ("blog_article", [
+        "latest article",
+        "our blog",
+        "on the blog",
+        "read the article",
+        "new article",
+    ]),
+
+    # ------------------------------------------------------------------
     # 1. PUZZLE - you ask the viewer to solve something
     # ------------------------------------------------------------------
     ("puzzle", [
@@ -108,6 +157,14 @@ TAG_RULES = [
         "we can save the",
         "do a kind thing",
         "because kindnes",
+        # ADDED from the untagged posts:
+        "danya",                  # the tribute reel said "Danya", not "for danya"
+        "@gm_avetik",             # the handle, not the words "gm avetik"
+        "narmadawalk",
+        "grand slam",
+        "this is why we love chess",
+        "teaching em young",
+        "joined the trend",
     ]),
 
     # ------------------------------------------------------------------
@@ -190,18 +247,40 @@ TAG_RULES = [
         "principle",
         "lesson",
         "tip",
+        # ADDED from the untagged posts:
+        "forked",
+        "7q",
+        "method",
+        "stay calm",
+        "important factors",
     ]),
 ]
 
 DEFAULT_TAG = "other"
 
 
+# A caption this short cannot be classified by keywords - there are no words.
+# Six real posts look like this: "\u2764\ufe0f", "\U0001f914", "Oops \U0001f440".
+# One of them scored 3.86% save, so they matter - they just need their own
+# label instead of hiding inside "other".
+MIN_REAL_CAPTION_CHARS = 18
+
+
+def _letters_only(text):
+    """Count just the letters, so emoji and punctuation do not inflate length."""
+    return sum(1 for ch in text if ch.isalpha())
+
+
 def tag_caption(caption):
     """Return the tag for one caption. The first matching group wins."""
     if not caption:
-        return DEFAULT_TAG
+        return "no_caption"
 
     text = str(caption).lower()
+
+    # Decided BEFORE the keyword rules: too little text to judge.
+    if _letters_only(text) < MIN_REAL_CAPTION_CHARS:
+        return "no_caption"
 
     for tag_name, keywords in TAG_RULES:
         for word in keywords:

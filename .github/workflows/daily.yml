@@ -11,9 +11,9 @@
 #   06:00 in Yerevan = 02:00 UTC. GitHub only understands UTC.
 #   You can also start it by hand any time - see workflow_dispatch below.
 #
-# WHY --skip-fb
-#   Facebook is still broken (error #10, wrong token). Skipping it keeps the
-#   job green. Remove that flag once we fix meta_client.py.
+# FACEBOOK
+#   Included. meta_client.py swaps your user token for a Page token before
+#   asking for the post list and insights, which is what Facebook requires.
 # ---------------------------------------------------------------------------
 
 name: Daily social data refresh
@@ -56,7 +56,7 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-        run: python collect.py --skip-fb
+        run: python collect.py
 
       - name: Work out rates and tags
         env:

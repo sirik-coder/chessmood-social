@@ -27,19 +27,23 @@ from another subject is how you get something new.
 WATCH_LIST = [
 
     # --- Chess: your market ---
-    ("chesscom",          "chess"),
+    ("wwwchesscom",       "chess"),      # FIXED: was "chesscom", which does not exist
     ("chessable",         "chess"),
     ("gothamchess",       "chess"),
     ("chessbaseindia",    "chess"),
-    ("danielnaroditsky",  "chess"),
-    ("anna.cramling",     "chess"),
+    ("annascamling",      "chess"),      # FIXED: was "anna.cramling" - wrong handle
+
+    # Daniel Naroditsky died in October 2025. The account will not post new
+    # work, so it cannot show what is working now. Left here, switched off,
+    # because removing it is Sirik's call and not the script's.
+    # ("danielnaroditsky",  "chess"),
 
     # --- Teaching, other subjects: your inspiration ---
     ("duolingo",          "teaching"),   # makes daily practice feel like a game
     ("brilliantorg",      "teaching"),   # teaches maths and logic visually
     ("morningbrew",       "teaching"),   # makes dry information enjoyable
-    ("thefutur",          "teaching"),   # teaches a paid skill to adults
-    ("ali.abdaal",        "teaching"),   # learning and study content
+    ("thefuturishere",    "teaching"),   # FIXED: was "thefutur" - wrong handle
+    ("aliabdaal",         "teaching"),   # FIXED: was "ali.abdaal" - no dot
     ("sketchplanations",  "teaching"),   # one idea, one picture
 ]
 

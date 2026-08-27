@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------------------
+# Weekly competitor scan.
+#
+# WHY SEPARATE FROM daily.yml
+#   inspire.py APPENDS rows to the Inspiration tab every run. Daily would add
+#   ~275 rows a week. Weekly keeps the sheet honest. (stats.py de-duplicates
+#   by permalink when reading, so old copies never distort the dashboard - but
+#   there is no reason to create them.)
+#
+# WHEN
+#   Mondays 07:00 Yerevan = 03:00 UTC. Also runnable by hand.
+# ---------------------------------------------------------------------------
+
+name: Weekly competitor scan
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"      # Mondays 03:00 UTC = 07:00 Yerevan
+  workflow_dispatch:
+
+concurrency:
+  group: weekly-inspiration
+  cancel-in-progress: false
+
+jobs:
+  inspire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install the libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Scan the watch list
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_API_VERSION: ${{ secrets.META_API_VERSION }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python inspire.py

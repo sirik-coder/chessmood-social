@@ -31,7 +31,7 @@ WATCH_LIST = [
     ("chessable",         "chess"),
     ("gothamchess",       "chess"),
     ("chessbaseindia",    "chess"),
-    ("annascamling",      "chess"),      # FIXED: was "anna.cramling" - wrong handle
+    ("annacramling",      "chess"),      # 2nd try: "anna.cramling" and "annascamling" both failed
 
     # Daniel Naroditsky died in October 2025. The account will not post new
     # work, so it cannot show what is working now. Left here, switched off,
